@@ -12,7 +12,10 @@ ball_center = (127, 655)
 ball_half_height = 23
 
 g = 10
+K = 90
+ring_from_center = 30
 
+bgcords, ltcords, leftcords, middlecords, rightcords = (55, 195), (65, 188), (70, 195), (92, 195), (115, 195)
 
 ring = Image.open("detector.png")
 
@@ -57,13 +60,13 @@ while True:
 
     while time.time_ns() - start < 500000000:
         mscreen = pyautogui.screenshot().crop(crop)
-        bg = mscreen.getpixel((55, 195))
+        bg = mscreen.getpixel(bgcords)
 
-        lt = mscreen.getpixel((65, 188))
+        lt = mscreen.getpixel(ltcords)
 
-        left = mscreen.getpixel((70, 195))
-        middle = mscreen.getpixel((92, 195))
-        right = mscreen.getpixel((115, 195))
+        left = mscreen.getpixel(leftcords)
+        middle = mscreen.getpixel(middlecords)
+        right = mscreen.getpixel(rightcords)
 
         if color_diff(left, bg) < 1000:
             continue
@@ -153,7 +156,7 @@ while True:
         time_up = velocity * sin / g
         hmax = (velocity ** 2) * (sin ** 2) / (2 * g)
 
-        s_ring_enter = S - 30
+        s_ring_enter = S - ring_from_center
         h_ring_enter = (velocity * sin * s_ring_enter) / (velocity * cos + V) - (g * (s_ring_enter ** 2)) / (2 * ((velocity * cos + V) ** 2))
 
         if h_ring_enter - H <= ball_half_height:
@@ -162,7 +165,7 @@ while True:
         if flight_time < time_up:
             continue
 
-        if hmax - H <= 50:
+        if hmax - H <= ball_half_height * 2:
             continue
 
         if best is None or best[2] > flight_time:
@@ -180,4 +183,4 @@ while True:
 
     save_screenshot(screen, best[0], best[1], V)
 
-    pyautogui.click((high_x, high_y - 90))
+    pyautogui.click((high_x, high_y - K))
